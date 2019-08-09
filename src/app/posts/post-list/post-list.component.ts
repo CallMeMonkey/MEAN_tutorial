@@ -5,6 +5,7 @@ import { PageEvent } from '@angular/material';
 import { Post } from '../post.model';
 import { PostsService } from '../posts.service';
 import { getMatIconFailedToSanitizeLiteralError } from '@angular/material';
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: 'app-post-list',
@@ -12,21 +13,17 @@ import { getMatIconFailedToSanitizeLiteralError } from '@angular/material';
   styleUrls: ['./post-list.component.css']
 })
 export class PostListComponent implements OnInit, OnDestroy {
-  // posts = [
-  //   {title: '1', content: '1 content'},
-  //   {title: '2', content: '2 content'},
-  //   {title: '3', content: '3 content'}
-  // ];
   posts: Post[] = [];
   isLoading = false;
   totalPosts = 0;
   postsPerPage = 2;
   currentPage = 1;
   pageSizeOptions = [1, 2, 5, 10];
+  userIsAuthenticated = false;
   private postsSub: Subscription;
+  private authServiceSub: Subscription;
 
-  constructor(public postService: PostsService) {
-  }
+  constructor(public postService: PostsService, private authService: AuthService) {}
 
   ngOnInit() {
     this.isLoading = true;
@@ -38,6 +35,12 @@ export class PostListComponent implements OnInit, OnDestroy {
         this.totalPosts = postsData.postCount;
         this.posts = postsData.posts;
     });
+    this.userIsAuthenticated = this.authService.getIsAuth();
+    this.authServiceSub = this.authService
+      .getAuthStatusListener()
+      .subscribe(isAuthenticated => {
+        this.userIsAuthenticated = isAuthenticated;
+      });
   }
 
   onChangePage(pageData: PageEvent) {
@@ -55,5 +58,6 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postsSub.unsubscribe();
+    this.authServiceSub.unsubscribe();
   }
 }
