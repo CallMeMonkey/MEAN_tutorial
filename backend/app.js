@@ -8,9 +8,12 @@ const userRouters = require('./routes/user');
 
 const app = express();
 // mongoose.connect('mongodb+srv://max:Uz04LDKtf21yRj6Z@cluster0-fby03.mongodb.net/node-angular?retryWrites=true&w=majority', { useNewUrlParser: true })
-mongoose.connect('mongodb://localhost:27017/node-angular', { useNewUrlParser: true })
+mongoose.connect('mongodb://127.0.0.1:27017/node-angular', { useNewUrlParser: true })
+  .then(() => {
+    console.log('Connection succeed.');
+  })
   .catch(() => {
-    console.log('Connection failed.')
+    console.log('Connection failed.');
   });
 
 app.use(bodyParser.json());
